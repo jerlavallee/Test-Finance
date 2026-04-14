@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Net Worth Tracker</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+    .page {
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+    .hero, .card, .summary-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .kicker {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #64748b;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 0;
+      font-size: 36px;
+      line-height: 1.1;
+    }
+    .subtitle {
+      margin: 10px 0 0 0;
+      color: #475569;
+      max-width: 700px;
+      line-height: 1.5;
+    }
+    .summary-grid, .main-grid, .totals-row {
+      display: grid;
+      gap: 16px;
+    }
+    .summary-grid {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .main-grid {
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .summary-title {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .summary-value {
+      font-size: 30px;
+      font-weight: 700;
+    }
+    .card-title {
+      margin: 0;
+      font-size: 24px;
+    }
+    .card-text {
+      color: #64748b;
+      margin-top: 6px;
+      margin-bottom: 20px;
+    }
+    .list {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .row {
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+    label {
+      font-size: 14px;
+      color: #475569;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 16px;
+    }
+    button {
+      font: inherit;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .primary {
+      background: #0f172a;
+      color: white;
+      width: 100%;
+    }
+    .secondary {
+      background: white;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+    .delete {
+      background: #fff1f2;
+      color: #be123c;
+      border: 1px solid #fecdd3;
+    }
+    .snapshot-box {
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 10px;
+      margin-bottom: 16px;
+    }
+    .snapshot-label {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .snapshot-value {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    .totals-row {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .total-pill {
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <div class="hero">
+        <div>
+          <div class="kicker">Personal finance</div>
+          <h1>Net Worth Tracker</h1>
+          <p class="subtitle">Add your assets and liabilities to calculate your net worth on computer and iPhone.</p>
+        </div>
+        <button class="secondary" onclick="resetData()">Reset sample data</button>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-title">Assets</div>
+          <div class="summary-value" id="totalAssets">$0</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-title">Liabilities</div>
+          <div class="summary-value" id="totalLiabilities">$0</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-title">Net worth</div>
+          <div class="summary-value" id="netWorth">$0</div>
+        </div>
+      </div>
+
+      <div class="main-grid">
+        <div class="card">
+          <h2 class="card-title">Assets</h2>
+          <p class="card-text">Everything you own</p>
+          <div id="assetsList" class="list"></div>
+          <button class="primary" onclick="addAsset()">Add asset</button>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Liabilities</h2>
+          <p class="card-text">Everything you owe</p>
+          <div id="liabilitiesList" class="list"></div>
+          <button class="primary" onclick="addLiability()">Add liability</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Snapshot</h2>
+        <div class="snapshot-box">
+          <div class="snapshot-label">Current net worth</div>
+          <div class="snapshot-value" id="snapshotNetWorth">$0</div>
+        </div>
+        <div class="totals-row">
+          <div class="total-pill">
+            <span>Total assets</span>
+            <strong id="pillAssets">$0</strong>
+          </div>
+          <div class="total-pill">
+            <span>Total liabilities</span>
+            <strong id="pillLiabilities">$0</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const currency = new Intl.NumberFormat("en-CA", {
+      style: "currency",
+      currency: "CAD",
+      maximumFractionDigits: 0
+    });
+
+    const defaultAssets = [
+      { id: crypto.randomUUID(), name: "Chequing", amount: "12500" },
+      { id: crypto.randomUUID(), name: "TFSA", amount: "28000" },
+      { id: crypto.randomUUID(), name: "Home", amount: "550000" }
+    ];
+
+    const defaultLiabilities = [
+      { id: crypto.randomUUID(), name: "Mortgage", amount: "320000" },
+      { id: crypto.randomUUID(), name: "Credit card", amount: "1200" }
+    ];
+
+    let assets = JSON.parse(localStorage.getItem("networth_assets") || "null") || structuredClone(defaultAssets);
+    let liabilities = JSON.parse(localStorage.getItem("networth_liabilities") || "null") || structuredClone(defaultLiabilities);
+
+    function makeItem() {
+      return { id: crypto.randomUUID(), name: "", amount: "" };
+    }
+
+    function sumItems(items) {
+      return items.reduce((total, item) => total + (Number(item.amount) || 0), 0);
+    }
+
+    function save() {
+      localStorage.setItem("networth_assets", JSON.stringify(assets));
+      localStorage.setItem("networth_liabilities", JSON.stringify(liabilities));
+    }
+
+    function renderList(items, containerId, type) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+
+      items.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "row";
+
+        row.innerHTML = `
+          <div class="field">
+            <label>Name</label>
+            <input value="${escapeHtml(item.name)}" placeholder="Example: Chequing account" />
+          </div>
+          <div class="field">
+            <label>Amount</label>
+            <input type="number" inputmode="decimal" value="${escapeHtml(item.amount)}" placeholder="0" />
+          </div>
+          <button class="delete">Delete</button>
+        `;
+
+        const inputs = row.querySelectorAll("input");
+        const deleteBtn = row.querySelector("button");
+
+        inputs[0].addEventListener("input", (e) => {
+          item.name = e.target.value;
+          save();
+        });
+
+        inputs[1].addEventListener("input", (e) => {
+          item.amount = e.target.value;
+          save();
+          render();
+        });
+
+        deleteBtn.addEventListener("click", () => {
+          if (type === "assets") {
+            assets = assets.filter((x) => x.id !== item.id);
+          } else {
+            liabilities = liabilities.filter((x) => x.id !== item.id);
+          }
+          save();
+          render();
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+    function renderTotals() {
+      const totalAssets = sumItems(assets);
+      const totalLiabilities = sumItems(liabilities);
+      const netWorth = totalAssets - totalLiabilities;
+
+      document.getElementById("totalAssets").textContent = currency.format(totalAssets);
+      document.getElementById("totalLiabilities").textContent = currency.format(totalLiabilities);
+      document.getElementById("netWorth").textContent = currency.format(netWorth);
+      document.getElementById("snapshotNetWorth").textContent = currency.format(netWorth);
+      document.getElementById("pillAssets").textContent = currency.format(totalAssets);
+      document.getElementById("pillLiabilities").textContent = currency.format(totalLiabilities);
+    }
+
+    function render() {
+      renderList(assets, "assetsList", "assets");
+      renderList(liabilities, "liabilitiesList", "liabilities");
+      renderTotals();
+    }
+
+    function addAsset() {
+      assets.push(makeItem());
+      save();
+      render();
+    }
+
+    function addLiability() {
+      liabilities.push(makeItem());
+      save();
+      render();
+    }
+
+    function resetData() {
+      assets = structuredClone(defaultAssets);
+      liabilities = structuredClone(defaultLiabilities);
+      save();
+      render();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    render();
+  </script>
+</body>
+</html>
